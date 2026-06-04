@@ -129,6 +129,44 @@ header h1{
     font-size:18px;
 }
 
+/* CART */
+.cart-box{
+    max-width:600px;
+    margin:20px auto;
+    background:var(--card);
+    padding:20px;
+    border-radius:20px;
+    display:none;
+}
+
+.cart-title{
+    font-size:22px;
+    margin-bottom:10px;
+}
+
+.cart-item{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:10px 0;
+    border-bottom:1px solid rgba(255,255,255,0.1);
+}
+
+.cart-total{
+    font-size:20px;
+    margin-top:15px;
+    font-weight:bold;
+}
+
+.remove-btn{
+    background:red;
+    color:white;
+    border:none;
+    padding:6px 10px;
+    border-radius:6px;
+    cursor:pointer;
+}
+
 /* FORM */
 .form-box{
     max-width:600px;
@@ -180,24 +218,28 @@ button{
 <!-- 🔥 3 KLIKALNE PRODUKTY -->
 <div class="products">
 
-    <!-- PRODUKT 1 — Twój plik p1.png -->
-    <div class="product-card" onclick="scrollToForm()">
+    <div class="product-card" onclick="addToCart('Falownik',499)">
         <img src="p1.png">
         <div class="price-tag">od 499 zł</div>
     </div>
 
-    <!-- PRODUKT 2 -->
-    <div class="product-card" onclick="scrollToForm()">
+    <div class="product-card" onclick="addToCart('Szafa sterownicza',1299)">
         <img src="https://images.unsplash.com/photo-1581091012184-5c1d2d7f3c5b?w=500">
         <div class="price-tag">od 1299 zł</div>
     </div>
 
-    <!-- PRODUKT 3 -->
-    <div class="product-card" onclick="scrollToForm()">
+    <div class="product-card" onclick="addToCart('Programowanie PLC',199)">
         <img src="https://images.unsplash.com/photo-1581090700227-1e37b3c2c2a3?w=500">
         <div class="price-tag">od 199 zł/h</div>
     </div>
 
+</div>
+
+<!-- 🛒 KOSZYK -->
+<div class="cart-box" id="cartBox">
+    <div class="cart-title">🛒 Twój koszyk</div>
+    <div id="cartItems"></div>
+    <div class="cart-total" id="cartTotal">Suma: 0 zł</div>
 </div>
 
 <div class="form-box">
@@ -209,16 +251,7 @@ button{
 <input type="text" name="Imie" placeholder="Imię" required>
 <input type="tel" name="Telefon" placeholder="Numer telefonu" required>
 
-<select name="Produkt">
-<option>Falownik</option>
-<option>Szafa sterownicza</option>
-<option>Programowanie PLC</option>
-<option>Automatyka przemysłowa</option>
-</select>
-
-<textarea name="Opis" rows="5" placeholder="Opis zamówienia"></textarea>
-
-<input type="hidden" name="_captcha" value="false">
+<textarea id="summary" name="Podsumowanie" style="display:none"></textarea>
 
 <button type="submit">Wyślij zamówienie</button>
 
@@ -237,14 +270,74 @@ function setDark(){
     localStorage.setItem("mode","dark");
 }
 
-function scrollToForm(){
-    document.getElementById('zamowienie').scrollIntoView({behavior:'smooth'});
-}
-
 window.onload = () => {
     if(localStorage.getItem("mode")==="light"){
         document.body.classList.add("light");
     }
+}
+
+/* 🛒 KOSZYK 2.0 */
+let cart = [];
+
+function addToCart(name, price){
+    let item = cart.find(p => p.name === name);
+
+    if(item){
+        item.qty++;
+    } else {
+        cart.push({name, price, qty: 1});
+    }
+
+    updateCart();
+}
+
+function removeFromCart(name){
+    cart = cart.filter(p => p.name !== name);
+    updateCart();
+}
+
+function updateCart(){
+    const box = document.getElementById("cartBox");
+    const items = document.getElementById("cartItems");
+    const totalBox = document.getElementById("cartTotal");
+
+    if(cart.length === 0){
+        box.style.display = "none";
+        return;
+    }
+
+    box.style.display = "block";
+
+    let html = "";
+    let total = 0;
+
+    cart.forEach(item=>{
+        let sum = item.price * item.qty;
+        total += sum;
+
+        html += `
+            <div class="cart-item">
+                <span>${item.name} (x${item.qty})</span>
+                <span>${sum} zł</span>
+                <button class="remove-btn" onclick="removeFromCart('${item.name}')">Usuń</button>
+            </div>
+        `;
+    });
+
+    items.innerHTML = html;
+    totalBox.innerText = "Suma: " + total + " zł";
+
+    generateSummary();
+}
+
+function generateSummary(){
+    let summary = "Podsumowanie zamówienia:\n\n";
+
+    cart.forEach(item=>{
+        summary += `${item.name} x${item.qty} = ${item.price * item.qty} zł\n`;
+    });
+
+    document.getElementById("summary").value = summary;
 }
 </script>
 
