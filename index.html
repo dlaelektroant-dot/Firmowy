@@ -47,24 +47,36 @@ body{
 
 .logo{
     font-weight:bold;
-    font-size:18px;
 }
 
-/* ICON TOGGLE */
+/* ICONS */
 .mode-icons{
     display:flex;
-    gap:10px;
+    gap:15px;
     align-items:center;
 }
 
-.mode-icons img{
-    width:35px;
+.mode-btn{
+    width:55px;
+    height:55px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    border-radius:15px;
+    background:rgba(255,255,255,0.08);
     cursor:pointer;
     transition:0.2s;
+    border:1px solid rgba(255,255,255,0.15);
 }
 
-.mode-icons img:hover{
-    transform:scale(1.2);
+.mode-btn:hover{
+    transform:scale(1.1);
+    background:rgba(255,255,255,0.15);
+}
+
+.mode-btn img{
+    width:35px;
+    height:35px;
 }
 
 /* HEADER */
@@ -128,11 +140,17 @@ button{
     <div class="logo">ElektroAnt ⚡</div>
 
     <div class="mode-icons">
-        <!-- SUN -->
-        <img src="https://cdn-icons-png.flaticon.com/512/869/869869.png" onclick="setLight()" title="Light mode">
 
-        <!-- MOON -->
-        <img src="https://cdn-icons-png.flaticon.com/512/1164/1164954.png" onclick="setDark()" title="Dark mode">
+        <!-- SUN -->
+        <div class="mode-btn" onclick="setLight()" title="Jasny tryb">
+            <img src="https://cdn-icons-png.flaticon.com/512/869/869869.png">
+        </div>
+
+        <!-- MOON (WYRAŹNY) -->
+        <div class="mode-btn" onclick="setDark()" title="Ciemny tryb">
+            <img src="https://cdn-icons-png.flaticon.com/512/1164/1164954.png">
+        </div>
+
     </div>
 </div>
 
