@@ -15,7 +15,6 @@
     --accent:#06b6d4;
 }
 
-/* LIGHT MODE */
 .light{
     --bg1:#e2e8f0;
     --bg2:#f8fafc;
@@ -38,26 +37,53 @@ body{
     transition:0.3s;
 }
 
+/* TOP BAR */
+.topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:15px 20px;
+}
+
+.logo{
+    font-weight:bold;
+    font-size:18px;
+}
+
+/* ICON TOGGLE */
+.mode-icons{
+    display:flex;
+    gap:10px;
+    align-items:center;
+}
+
+.mode-icons img{
+    width:35px;
+    cursor:pointer;
+    transition:0.2s;
+}
+
+.mode-icons img:hover{
+    transform:scale(1.2);
+}
+
+/* HEADER */
 header{
     text-align:center;
-    padding:60px 20px;
+    padding:40px 20px;
 }
 
 header img{
-    width:180px;
+    width:160px;
     border-radius:20px;
-    box-shadow:0 0 20px rgba(0,255,255,.4);
 }
 
 header h1{
-    margin-top:20px;
-    font-size:3em;
+    margin-top:15px;
+    font-size:2.5em;
 }
 
-header p{
-    color:var(--muted);
-}
-
+/* FORM */
 .form-box{
     max-width:600px;
     margin:30px auto;
@@ -85,29 +111,9 @@ button{
     color:white;
     font-size:18px;
     cursor:pointer;
-    transition:.3s;
 }
 
-button:hover{
-    transform:scale(1.03);
-}
-
-.topbar{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:15px 20px;
-}
-
-.toggle{
-    background:transparent;
-    border:1px solid var(--text);
-    padding:8px 12px;
-    border-radius:10px;
-    cursor:pointer;
-    color:var(--text);
-}
-
+/* INFO */
 .info{
     text-align:center;
     padding:40px;
@@ -119,12 +125,19 @@ button:hover{
 <body>
 
 <div class="topbar">
-    <h3>ElektroAnt ⚡</h3>
-    <button class="toggle" onclick="toggleMode()">🌙 / ☀️</button>
+    <div class="logo">ElektroAnt ⚡</div>
+
+    <div class="mode-icons">
+        <!-- SUN -->
+        <img src="https://cdn-icons-png.flaticon.com/512/869/869869.png" onclick="setLight()" title="Light mode">
+
+        <!-- MOON -->
+        <img src="https://cdn-icons-png.flaticon.com/512/1164/1164954.png" onclick="setDark()" title="Dark mode">
+    </div>
 </div>
 
 <header>
-<img src="https://images.unsplash.com/photo-1581092160607-ee22731d8b2e?w=500" alt="Automatyka">
+<img src="https://images.unsplash.com/photo-1581092160607-ee22731d8b2e?w=500">
 <h1>ElektroAnt</h1>
 <p>Falowniki • Automatyka • Szafy Sterownicze</p>
 </header>
@@ -135,7 +148,6 @@ button:hover{
 <form action="https://formsubmit.co/TWOJ_EMAIL@gmail.com" method="POST">
 
 <input type="text" name="Imie" placeholder="Imię" required>
-
 <input type="tel" name="Telefon" placeholder="Numer telefonu" required>
 
 <select name="Produkt">
@@ -155,23 +167,23 @@ button:hover{
 </div>
 
 <div class="info">
-<h2>⚡ Profesjonalne rozwiązania dla przemysłu</h2>
+<h2>⚡ Profesjonalne rozwiązania</h2>
 <p>Szybka realizacja i wsparcie techniczne.</p>
 </div>
 
 <script>
-function toggleMode(){
-    document.body.classList.toggle("light");
-    
-    if(document.body.classList.contains("light")){
-        localStorage.setItem("mode","light");
-    } else {
-        localStorage.setItem("mode","dark");
-    }
+function setLight(){
+    document.body.classList.add("light");
+    localStorage.setItem("mode","light");
+}
+
+function setDark(){
+    document.body.classList.remove("light");
+    localStorage.setItem("mode","dark");
 }
 
 window.onload = function(){
-    if(localStorage.getItem("mode") === "light"){
+    if(localStorage.getItem("mode")==="light"){
         document.body.classList.add("light");
     }
 }
