@@ -244,13 +244,13 @@ button{
     </div>
 
     <div class="product-card" onclick="addToCart('Szafa sterownicza',1299)">
-        <img src="https://images.unsplash.com/photo-1581091012184-5c1d2d7f3c5b?w=500">
+        <img src="">
         <div class="price-tag">od 1299 zł</div>
     </div>
 
     <div class="product-card" onclick="addToCart('Programowanie PLC',199)">
-        <img src="https://images.unsplash.com/photo-1581090700227-1e37b3c2c2a3?w=500">
-        <div class="price-tag">199 zł/h</div>
+        <img src="p3.png">
+        <div class="price-tag">199</div>
     </div>
 
 </div>
@@ -266,15 +266,23 @@ button{
 
 <h2>Złóż zamówienie</h2>
 
-<form id="zamowienie" action="https://formsubmit.co/dlaelektro.ant@gmail.com" method="POST">
+<form id="zamowienie"
 
-<input type="text" name="Imie" placeholder="Imię" required>
+<input type="text" name="Imie" placeholder="Imię nazwisko" required>
 <input type="tel" name="Telefon" placeholder="Numer telefonu" required>
 
 <textarea id="summary" name="Podsumowanie" style="display:none"></textarea>
 
 <button type="submit">Wyślij zamówienie</button>
 
+    <footer>
+  © firma <span id="year"></span>
+<a href="mailto:anteczex@gmail.com">Kontakt z programistą</a>
+    </footer>
+
+<script>
+  document.getElementById("year").textContent = new Date().getFullYear();
+</script>
 </form>
 
 </div>
@@ -381,8 +389,10 @@ document.getElementById("zamowienie").addEventListener("submit", async (e) => {
             date: new Date().toISOString()
         });
 
-        alert("Zamówienie zapisane w Firebase!");
+        alert("Zamówienie zapisane");
+        alert("UWAGA dzwonimy z numeru ...........");
         e.target.submit();
+        
     } catch (err) {
         alert("Błąd Firebase: " + err);
     }
