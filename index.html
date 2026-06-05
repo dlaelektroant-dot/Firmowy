@@ -233,29 +233,6 @@ button{
     display:none;
     box-shadow:0 0 20px rgba(0,0,0,0.4);
 }
-
-/* MODAL PREMIUM */
-.modal-overlay{
-    position:fixed;
-    inset:0;
-    background:rgba(15,23,42,0.85);
-    display:none;
-    justify-content:center;
-    align-items:center;
-    z-index:999;
-}
-
-.modal{
-    width:90%;
-    max-width:420px;
-    background:radial-gradient(circle at top,#0f172a,#020617);
-    border-radius:24px;
-    padding:24px 22px;
-    box-shadow:0 0 40px rgba(6,182,212,0.6);
-    border:1px solid rgba(148,163,184,0.4);
-    color:#e2e8f0;
-}
-
 </style>
 
 <!-- FIREBASE -->
@@ -303,20 +280,30 @@ button{
         <img src="p1.png">
         <div class="product-name">Falownik</div>
         <div class="price-tag">od 499 zł</div>
+        <button onclick="event.stopPropagation(); addToCart('Falownik', 499)">Dodaj do koszyka</button>
     </div>
 
     <div class="product-card" onclick="selectProduct('Szafa sterownicza')">
         <img src="p2.png">
         <div class="product-name">Szafa sterownicza</div>
         <div class="price-tag">od 1299 zł</div>
+        <button onclick="event.stopPropagation(); addToCart('Szafa sterownicza', 1299)">Dodaj do koszyka</button>
     </div>
 
     <div class="product-card" onclick="selectProduct('Programowanie PLC')">
         <img src="p3.png">
         <div class="product-name">Programowanie PLC</div>
         <div class="price-tag">199 zł</div>
+        <button onclick="event.stopPropagation(); addToCart('Programowanie PLC', 199)">Dodaj do koszyka</button>
     </div>
 
+</div>
+
+<!-- KOSZYK -->
+<div class="cart-box" id="cartBox">
+    <div class="cart-title">🛒 Twój koszyk</div>
+    <div id="cartItems"></div>
+    <div class="cart-total" id="cartTotal">Suma: 0 zł</div>
 </div>
 
 <!-- FORMULARZ -->
@@ -371,15 +358,7 @@ button{
 </div>
 
 <script>
-function toggleAI(){
-    const bubble = document.getElementById("aiBubble");
-    bubble.style.display = bubble.style.display === "block" ? "none" : "block";
-}
-
-function selectProduct(name){
-    document.getElementById("productName").value = name;
-}
-
+// TRYB JASNY / CIEMNY
 function setLight(){
     document.body.classList.add("light");
     localStorage.setItem("mode","light");
@@ -395,7 +374,119 @@ window.onload = () => {
         document.body.classList.add("light");
     }
     document.getElementById("year").textContent = new Date().getFullYear();
+};
+
+// AI HELPER
+function toggleAI(){
+    const bubble = document.getElementById("aiBubble");
+    bubble.style.display = bubble.style.display === "block" ? "none" : "block";
 }
+
+// AUTO-WYPEŁNIANIE NAZWY PRODUKTU
+function selectProduct(name){
+    document.getElementById("productName").value = name;
+}
+
+// KOSZYK
+let cart = [];
+
+function addToCart(name, price){
+    let item = cart.find(p => p.name === name);
+
+    if(item){
+        item.qty++;
+    } else {
+        cart.push({name, price, qty: 1});
+    }
+
+    updateCart();
+}
+
+function removeFromCart(name){
+    cart = cart.filter(p => p.name !== name);
+    updateCart();
+}
+
+function updateCart(){
+    const box = document.getElementById("cartBox");
+    const items = document.getElementById("cartItems");
+    const totalBox = document.getElementById("cartTotal");
+
+    if(cart.length === 0){
+        box.style.display = "none";
+        return;
+    }
+
+    box.style.display = "block";
+
+    let html = "";
+    let total = 0;
+
+    cart.forEach(item=>{
+        let sum = item.price * item.qty;
+        total += sum;
+
+        html += `
+            <div class="cart-item">
+                <span>${item.name} (x${item.qty})</span>
+                <span>${sum} zł</span>
+                <button class="remove-btn" onclick="removeFromCart('${item.name}')">Usuń</button>
+            </div>
+        `;
+    });
+
+    items.innerHTML = html;
+    totalBox.innerText = "Suma: " + total + " zł";
+
+    generateSummary();
+}
+
+function generateSummary(){
+    let summary = "Podsumowanie zamówienia:\n\n";
+
+    cart.forEach(item=>{
+        summary += `${item.name} x${item.qty} = ${item.price * item.qty} zł\n`;
+    });
+
+    document.getElementById("summary").value = summary;
+}
+
+// FIREBASE — ZAPIS ZAMÓWIENIA
+async function submitToFirebase(){
+    const { addDoc, collection } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+
+    const nazwa_produktu = document.querySelector("input[name='nazwa_produktu']").value;
+    const imie_nazwisko = document.querySelector("input[name='imie_nazwisko']").value;
+    const adres = document.querySelector("textarea[name='adres']").value;
+    const telefon = document.querySelector("input[name='telefon']").value;
+    const email = document.querySelector("input[name='email']").value;
+    const nip = document.querySelector("input[name='nip']").value;
+    const opis = document.querySelector("textarea[name='opis']").value;
+    const podsumowanie = document.getElementById("summary").value;
+
+    await addDoc(collection(window.db, "zamowienia"), {
+        nazwa_produktu,
+        imie_nazwisko,
+        adres,
+        telefon,
+        email,
+        nip,
+        opis,
+        podsumowanie,
+        data: new Date().toLocaleString()
+    });
+
+    alert("Zamówienie zostało wysłane!");
+    document.getElementById("zamowienie").reset();
+    cart = [];
+    updateCart();
+}
+
+// WYSYŁANIE FORMULARZA
+document.getElementById("zamowienie").addEventListener("submit", async function(e){
+    e.preventDefault();
+    await submitToFirebase();
+});
 </script>
 
 </body>
