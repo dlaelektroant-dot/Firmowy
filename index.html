@@ -196,6 +196,26 @@ button{
     font-size:18px;
 }
 </style>
+
+<!-- 🔥 FIREBASE KONFIGURACJA -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getFirestore } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCV3Ckci_JcI-JPNHeUbIUwyQxBk-EmK7M",
+    authDomain: "firma-zamowienia.firebaseapp.com",
+    projectId: "firma-zamowienia",
+    storageBucket: "firma-zamowienia.firebasestorage.app",
+    messagingSenderId: "65145966967",
+    appId: "1:65145966967:web:2737cd8d98d437cb064bf6",
+    measurementId: "G-BP4MWD25N5"
+  };
+
+  window.firebaseApp = initializeApp(firebaseConfig);
+  window.db = getFirestore(firebaseApp);
+</script>
+
 </head>
 
 <body>
@@ -215,40 +235,25 @@ button{
 <p>Falowniki • Automatyka • Szafy Sterownicze</p>
 </header>
 
-<!-- 🔥 3 KLIKALNE PRODUKTY -->
+<!-- 🔥 PRODUKTY -->
 <div class="products">
 
-    <div class="product-card" onclick="addToCart('y',499)">
+    <div class="product-card" onclick="addToCart('Falownik',499)">
         <img src="p1.png">
-        <div class="price-tag">od x zł</div>
+        <div class="price-tag">od 499 zł</div>
     </div>
 
-    <div class="product-card" onclick="addToCart('y',1299)">
+    <div class="product-card" onclick="addToCart('Szafa sterownicza',1299)">
         <img src="https://images.unsplash.com/photo-1581091012184-5c1d2d7f3c5b?w=500">
-        <div class="price-tag">od x zł</div>
+        <div class="price-tag">od 1299 zł</div>
     </div>
 
-    <div class="product-card" onclick="addToCart('y',199)">
+    <div class="product-card" onclick="addToCart('Programowanie PLC',199)">
         <img src="https://images.unsplash.com/photo-1581090700227-1e37b3c2c2a3?w=500">
-        <div class="price-tag">od x zł/h</div>
+        <div class="price-tag">199 zł/h</div>
     </div>
 
-    <div class="products">
-
-    <div class="product-card" onclick="addToCart('y',499)">
-        <img src="p1.png">
-        <div class="price-tag">od x zł</div>
-    </div>
-
-    <div class="product-card" onclick="addToCart('y',1299)">
-        <img src="https://images.unsplash.com/photo-1581091012184-5c1d2d7f3c5b?w=500">
-        <div class="price-tag">od x zł</div>
-    </div>
-
-    <div class="product-card" onclick="addToCart('y',199)">
-        <img src="https://images.unsplash.com/photo-1581090700227-1e37b3c2c2a3?w=500">
-        <div class="price-tag">od x zł/h</div>
-    </div>
+</div>
 
 <!-- 🛒 KOSZYK -->
 <div class="cart-box" id="cartBox">
@@ -354,6 +359,34 @@ function generateSummary(){
 
     document.getElementById("summary").value = summary;
 }
+</script>
+
+<!-- 🔥 ZAPIS ZAMÓWIENIA DO FIREBASE -->
+<script type="module">
+import { collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+document.getElementById("zamowienie").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const name = document.querySelector("input[name='Imie']").value;
+    const phone = document.querySelector("input[name='Telefon']").value;
+    const summary = document.getElementById("summary").value;
+
+    try {
+        await addDoc(collection(window.db, "orders"), {
+            name,
+            phone,
+            summary,
+            cart,
+            date: new Date().toISOString()
+        });
+
+        alert("Zamówienie zapisane w Firebase!");
+        e.target.submit();
+    } catch (err) {
+        alert("Błąd Firebase: " + err);
+    }
+});
 </script>
 
 </body>
