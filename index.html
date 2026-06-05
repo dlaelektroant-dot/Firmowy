@@ -104,6 +104,7 @@ header h1{
     overflow:hidden;
     transition:0.3s;
     background:var(--card);
+    padding-bottom:10px;
 }
 
 .product-card:hover{
@@ -115,6 +116,13 @@ header h1{
     height:180px;
     object-fit:cover;
     display:block;
+}
+
+.product-name{
+    text-align:center;
+    margin-top:10px;
+    font-size:18px;
+    font-weight:bold;
 }
 
 .price-tag{
@@ -195,9 +203,62 @@ button{
     color:white;
     font-size:18px;
 }
+
+/* AI HELPER FLOATING BUTTON */
+.ai-helper{
+    position:fixed;
+    bottom:20px;
+    right:20px;
+    width:70px;
+    height:70px;
+    background:var(--accent);
+    border-radius:50%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:35px;
+    cursor:pointer;
+    box-shadow:0 0 20px rgba(0,0,0,0.4);
+    z-index:999;
+}
+
+.ai-bubble{
+    position:fixed;
+    bottom:100px;
+    right:20px;
+    background:var(--card);
+    padding:15px;
+    border-radius:15px;
+    width:220px;
+    display:none;
+    box-shadow:0 0 20px rgba(0,0,0,0.4);
+}
+
+/* MODAL PREMIUM */
+.modal-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(15,23,42,0.85);
+    display:none;
+    justify-content:center;
+    align-items:center;
+    z-index:999;
+}
+
+.modal{
+    width:90%;
+    max-width:420px;
+    background:radial-gradient(circle at top,#0f172a,#020617);
+    border-radius:24px;
+    padding:24px 22px;
+    box-shadow:0 0 40px rgba(6,182,212,0.6);
+    border:1px solid rgba(148,163,184,0.4);
+    color:#e2e8f0;
+}
+
 </style>
 
-<!-- 🔥 FIREBASE KONFIGURACJA -->
+<!-- FIREBASE -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import { getFirestore } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -235,59 +296,90 @@ button{
 <p>Falowniki • Automatyka • Szafy Sterownicze</p>
 </header>
 
-<!-- 🔥 PRODUKTY -->
+<!-- PRODUKTY -->
 <div class="products">
 
-    <div class="product-card" onclick="addToCart('Falownik',499)">
+    <div class="product-card" onclick="selectProduct('Falownik')">
         <img src="p1.png">
+        <div class="product-name">Falownik</div>
         <div class="price-tag">od 499 zł</div>
     </div>
 
-    <div class="product-card" onclick="addToCart('Szafa sterownicza',1299)">
-        <img src="">
+    <div class="product-card" onclick="selectProduct('Szafa sterownicza')">
+        <img src="p2.png">
+        <div class="product-name">Szafa sterownicza</div>
         <div class="price-tag">od 1299 zł</div>
     </div>
 
-    <div class="product-card" onclick="addToCart('Programowanie PLC',199)">
+    <div class="product-card" onclick="selectProduct('Programowanie PLC')">
         <img src="p3.png">
-        <div class="price-tag">199</div>
+        <div class="product-name">Programowanie PLC</div>
+        <div class="price-tag">199 zł</div>
     </div>
 
 </div>
 
-<!-- 🛒 KOSZYK -->
-<div class="cart-box" id="cartBox">
-    <div class="cart-title">🛒 Twój koszyk</div>
-    <div id="cartItems"></div>
-    <div class="cart-total" id="cartTotal">Suma: 0 zł</div>
-</div>
-
+<!-- FORMULARZ -->
 <div class="form-box">
 
 <h2>Złóż zamówienie</h2>
 
-<form id="zamowienie"
+<form id="zamowienie">
 
-<input type="text" name="Imie" placeholder="Imię nazwisko" required>
-<input type="tel" name="Telefon" placeholder="Numer telefonu" required>
+<label>Nazwa produktu</label>
+<input type="text" id="productName" name="nazwa_produktu" placeholder="Kliknij produkt lub wpisz ręcznie" required>
+
+<label>Imię i nazwisko</label>
+<input type="text" name="imie_nazwisko" placeholder="Imię i nazwisko" required>
+
+<label>Adres</label>
+<textarea name="adres" rows="3" placeholder="Ulica, numer, kod pocztowy, miejscowość" required></textarea>
+
+<label>Numer telefonu</label>
+<input type="tel" name="telefon" placeholder="Numer telefonu" required>
+
+<label>Adres e‑mail</label>
+<input type="email" name="email" placeholder="Adres e‑mail" required>
+
+<label>NIP (opcjonalnie)</label>
+<input type="text" name="nip" placeholder="NIP (niewymagany)">
+
+<label>Dodatkowe informacje</label>
+<textarea name="opis" rows="4" placeholder="Opisz czego potrzebujesz"></textarea>
 
 <textarea id="summary" name="Podsumowanie" style="display:none"></textarea>
 
 <button type="submit">Wyślij zamówienie</button>
 
-    <footer>
+<footer style="margin-top:20px;text-align:center;font-size:14px;">
   © firma <span id="year"></span>
-<a href="mailto:anteczex@gmail.com">Kontakt z programistą</a>
-    </footer>
+  <a href="mailto:anteczex@gmail.com" style="color:var(--accent);text-decoration:none;">Kontakt z programistą</a>
+</footer>
 
-<script>
-  document.getElementById("year").textContent = new Date().getFullYear();
-</script>
 </form>
 
 </div>
 
+<!-- AI HELPER -->
+<div class="ai-helper" onclick="toggleAI()">🤖</div>
+
+<div class="ai-bubble" id="aiBubble">
+    <b>AI Helper:</b><br>
+    • Kliknij produkt, a nazwa wpisze się sama<br>
+    • Wypełnij dane i wyślij zamówienie<br>
+    • W razie pytań — pisz śmiało!
+</div>
+
 <script>
+function toggleAI(){
+    const bubble = document.getElementById("aiBubble");
+    bubble.style.display = bubble.style.display === "block" ? "none" : "block";
+}
+
+function selectProduct(name){
+    document.getElementById("productName").value = name;
+}
+
 function setLight(){
     document.body.classList.add("light");
     localStorage.setItem("mode","light");
@@ -302,101 +394,8 @@ window.onload = () => {
     if(localStorage.getItem("mode")==="light"){
         document.body.classList.add("light");
     }
+    document.getElementById("year").textContent = new Date().getFullYear();
 }
-
-/* 🛒 KOSZYK 2.0 */
-let cart = [];
-
-function addToCart(name, price){
-    let item = cart.find(p => p.name === name);
-
-    if(item){
-        item.qty++;
-    } else {
-        cart.push({name, price, qty: 1});
-    }
-
-    updateCart();
-}
-
-function removeFromCart(name){
-    cart = cart.filter(p => p.name !== name);
-    updateCart();
-}
-
-function updateCart(){
-    const box = document.getElementById("cartBox");
-    const items = document.getElementById("cartItems");
-    const totalBox = document.getElementById("cartTotal");
-
-    if(cart.length === 0){
-        box.style.display = "none";
-        return;
-    }
-
-    box.style.display = "block";
-
-    let html = "";
-    let total = 0;
-
-    cart.forEach(item=>{
-        let sum = item.price * item.qty;
-        total += sum;
-
-        html += `
-            <div class="cart-item">
-                <span>${item.name} (x${item.qty})</span>
-                <span>${sum} zł</span>
-                <button class="remove-btn" onclick="removeFromCart('${item.name}')">Usuń</button>
-            </div>
-        `;
-    });
-
-    items.innerHTML = html;
-    totalBox.innerText = "Suma: " + total + " zł";
-
-    generateSummary();
-}
-
-function generateSummary(){
-    let summary = "Podsumowanie zamówienia:\n\n";
-
-    cart.forEach(item=>{
-        summary += `${item.name} x${item.qty} = ${item.price * item.qty} zł\n`;
-    });
-
-    document.getElementById("summary").value = summary;
-}
-</script>
-
-<!-- 🔥 ZAPIS ZAMÓWIENIA DO FIREBASE -->
-<script type="module">
-import { collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-document.getElementById("zamowienie").addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const name = document.querySelector("input[name='Imie']").value;
-    const phone = document.querySelector("input[name='Telefon']").value;
-    const summary = document.getElementById("summary").value;
-
-    try {
-        await addDoc(collection(window.db, "orders"), {
-            name,
-            phone,
-            summary,
-            cart,
-            date: new Date().toISOString()
-        });
-
-        alert("Zamówienie zapisane");
-        alert("UWAGA dzwonimy z numeru ...........");
-        e.target.submit();
-        
-    } catch (err) {
-        alert("Błąd Firebase: " + err);
-    }
-});
 </script>
 
 </body>
